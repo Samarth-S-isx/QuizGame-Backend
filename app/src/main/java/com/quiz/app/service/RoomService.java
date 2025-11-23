@@ -1,6 +1,8 @@
 package com.quiz.app.service;
 
 import com.quiz.app.dto.RoomSettingsDTO;
+import com.quiz.app.exception.RoomAlreadyExistsException;
+import com.quiz.app.exception.RoomNotFoundException;
 import com.quiz.app.model.Answer;
 import com.quiz.app.model.Player;
 import com.quiz.app.model.Question;
@@ -26,6 +28,11 @@ public class RoomService {
     }
 
     public Room createRoom(String roomCode, RoomSettingsDTO settingsDTO) {
+        if (roomRepository.findById(roomCode).isPresent()) {
+            throw new RoomAlreadyExistsException(
+                "Room with code '" + roomCode + "' already exists."
+            );
+        }
         System.out.println("Creating room with code: " + roomCode);
         Room room = new Room(roomCode);
         room.setNumberOfQuestions(settingsDTO.getNumQuestions());
@@ -39,13 +46,14 @@ public class RoomService {
     }
 
     public Player joinRoom(String roomCode, String playerName) {
-        Room room = roomRepository.findById(roomCode).orElse(null);
-        Player player = null;
-        if (room != null) {
-            player = room.addPlayer(playerName);
-            roomRepository.save(room); // Save the room with the new player
-            gameService.notifyPlayerJoin(roomCode, playerName);
-        }
+        Room room = roomRepository
+            .findById(roomCode)
+            .orElseThrow(() ->
+                new RoomNotFoundException("Room with code '" + roomCode + "' not found.")
+            );
+        Player player = room.addPlayer(playerName);
+        roomRepository.save(room); // Save the room with the new player
+        gameService.notifyPlayerJoin(roomCode, playerName);
         return player;
     }
 
