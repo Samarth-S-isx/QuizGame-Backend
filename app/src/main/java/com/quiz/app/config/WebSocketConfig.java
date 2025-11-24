@@ -12,7 +12,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").setAllowedOrigins("http://localhost:5173");
+        registry.addEndpoint("/ws").setAllowedOrigins("http://localhost:5173","https://6924aa0f3e676a44437ea295--1234quiz.netlify.app");
     }
 
     @Override
