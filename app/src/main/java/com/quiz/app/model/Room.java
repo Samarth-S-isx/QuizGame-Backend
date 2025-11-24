@@ -80,7 +80,14 @@ public class Room {
     }
 
     public Player addPlayer(String playerName) {
+        return addPlayer(playerName, null);
+    }
+
+    public Player addPlayer(String playerName, String userId) {
         Player player = new Player(playerName);
+        if (userId != null) {
+            player.setUserId(userId);
+        }
         players.put(player.getId(), player);
         leaderboard.put(player.getId(), new LeaderBoardEntry(player.getId(), player.getName(), 0));
         return player;

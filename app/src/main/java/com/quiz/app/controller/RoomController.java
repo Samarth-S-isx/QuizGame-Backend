@@ -6,6 +6,7 @@ import com.quiz.app.model.Player;
 import com.quiz.app.model.Room;
 import com.quiz.app.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin(origins = {"http://127.0.0.1:5500", "http://localhost:5173"})
@@ -26,8 +27,9 @@ public class RoomController {
     // Example: POST /rooms/join?roomCode=123456&playerName=Sam
     @PostMapping("/join")
     public PlayerJoinResponse joinRoom(@RequestParam String roomCode,
-                         @RequestParam(required = false, defaultValue = "Anonymous") String playerName) {
-        Player player = roomService.joinRoom(roomCode, playerName);
+                                     @RequestParam(required = false) String playerName,
+                                     Authentication authentication) {
+        Player player = roomService.joinRoom(roomCode, playerName, authentication);
         return new PlayerJoinResponse(roomCode, player.getId(), player.getName(),10);
     }
 

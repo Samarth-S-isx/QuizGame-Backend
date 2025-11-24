@@ -4,9 +4,14 @@ import com.quiz.app.dto.LoginResponseDTO;
 import com.quiz.app.dto.RegisterRequestDTO;
 import com.quiz.app.dto.UserDTO;
 import com.quiz.app.model.User;
+import com.quiz.app.dto.RoomHistoryDTO;
+import com.quiz.app.model.Room;
 import com.quiz.app.service.UserService;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,6 +40,12 @@ public class UserController {
     );
   }
 
+    @GetMapping("/me/rooms")
+    public List<RoomHistoryDTO> getMyRooms(Authentication authentication) {
+        String username = authentication.getName();
+        return userService.getParticipatedRooms(username);
+    }
+
   @GetMapping("/user")
   public List<UserDTO> getUser() {
     return userService
@@ -51,6 +62,6 @@ public class UserController {
       loginRequest.getUsername(),
       loginRequest.getPassword()
     );
-    return new LoginResponseDTO(token);
+    return new LoginResponseDTO(token, loginRequest.getUsername());
   }
 }

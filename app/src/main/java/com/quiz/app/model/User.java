@@ -4,6 +4,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Document(collection = "users")
 public class User {
 
@@ -17,6 +20,8 @@ public class User {
 
     private String role; // e.g., "USER", "ADMIN"
 
+    private Set<String> participatedRoomIds = new HashSet<>();
+
     // Constructors, getters, and setters
 
     public User() {
@@ -26,6 +31,14 @@ public class User {
         this.username = username;
         this.password = password;
         this.role = role;
+    }
+
+    public Set<String> getParticipatedRoomIds() {
+        return participatedRoomIds;
+    }
+
+    public void setParticipatedRoomIds(Set<String> participatedRoomIds) {
+        this.participatedRoomIds = participatedRoomIds;
     }
 
     public String getId() {
