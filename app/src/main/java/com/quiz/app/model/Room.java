@@ -94,12 +94,12 @@ public class Room {
     }
 
     public List<LeaderBoardEntry> getLeaderboard() {
-        System.out.println(new ArrayList<>(leaderboard.values()));
+        // System.out.println(new ArrayList<>(leaderboard.values()));
         return new ArrayList<>(leaderboard.values());
     }
 
     public void incrementScore(Player player, int score) {
-        System.out.println(player.getName()+"  "+score);
+        // System.out.println(player.getName()+"  "+score);
         leaderboard.computeIfPresent(player.getId(), (playerId, entry) -> {
             entry.setScore(entry.getScore() + score);
             return entry;

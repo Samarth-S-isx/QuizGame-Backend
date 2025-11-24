@@ -40,7 +40,7 @@ public class GameService {
   }
 
   public void startGame(String roomCode) {
-    System.out.println("roomCode");
+    // System.out.println("roomCode");
     Room room = roomRepository
       .findById(roomCode)
       .orElseThrow(() ->
@@ -74,7 +74,7 @@ public class GameService {
         Map<String, Object> payload = new HashMap<>();
         payload.put("question", q);
         payload.put("index", currentIndex);
-        System.out.println(currentIndex);
+        // System.out.println(currentIndex);
 
         messagingTemplate.convertAndSend(
           "/topic/" + roomCode + "/question",
@@ -90,7 +90,7 @@ public class GameService {
           "/topic/" + roomCode + "/leaderboard",
           finalRoom != null ? finalRoom.getLeaderboard() : List.of()
         );
-        System.out.println(room.getLeaderboard());
+        // System.out.println(room.getLeaderboard());
         messagingTemplate.convertAndSend("/topic/" + roomCode + "/game", "Game Over");
         scheduler.shutdown();
       }
@@ -100,9 +100,9 @@ public class GameService {
   }
 
   public void handleAnswer(Answer payload) {
-    System.out.println(
-      "answer submitted" + payload.getPlayerId() + payload.getSelectedOption()
-    );
+    // System.out.println(
+    //   "answer submitted" + payload.getPlayerId() + payload.getSelectedOption()
+    // );
     Room room = roomRepository
       .findById(payload.getRoomCode())
       .orElseThrow(() ->
@@ -149,7 +149,7 @@ public class GameService {
 
   public void notifyPlayerJoin(String roomCode, String playerName) {
     String notification = playerName + " has joined the room!";
-    System.out.println(notification);
+    // System.out.println(notification);
     messagingTemplate.convertAndSend(
       "/topic/room/" + roomCode + "/notifications",
       notification

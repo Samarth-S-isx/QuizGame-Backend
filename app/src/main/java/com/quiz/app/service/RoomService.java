@@ -34,7 +34,7 @@ public class RoomService {
                 "Room with code '" + roomCode + "' already exists."
             );
         }
-        System.out.println("Creating room with code: " + roomCode);
+        // System.out.println("Creating room with code: " + roomCode);
         Room room = new Room(roomCode);
         room.setNumberOfQuestions(settingsDTO.getNumQuestions());
         room.setTopic(settingsDTO.getTopic());
