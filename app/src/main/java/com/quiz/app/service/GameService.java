@@ -10,6 +10,7 @@ import com.quiz.app.model.UserResponse;
 import com.quiz.app.repository.RoomRepository;
 import com.quiz.app.repository.UserResponseRepository;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,7 @@ public class GameService {
   private final SimpMessagingTemplate messagingTemplate;
   private final RoomRepository roomRepository;
   private final UserResponseRepository userResponseRepository;
+  private final Map<String, List<String>> answeredPlayersPerQuestion = new HashMap<>();
 
   @Autowired
   public GameService(
@@ -62,6 +65,13 @@ public class GameService {
 
     Runnable task = () -> {
       int currentIndex = index.getAndIncrement();
+
+      // Handle unanswered questions for the previous question
+      if (currentIndex > 0) {
+        int previousQuestionIndex = currentIndex - 1;
+        handleUnanswered(roomCode, previousQuestionIndex);
+      }
+
       if (currentIndex < questions.size()) {
         // Fetch the latest room state before sending updates
         Room currentRoom = roomRepository.findById(roomCode).orElse(null);
@@ -69,7 +79,7 @@ public class GameService {
           scheduler.shutdown();
           return;
         }
-
+        answeredPlayersPerQuestion.put(roomCode + ":" + currentIndex, Collections.synchronizedList(new java.util.ArrayList<>()));
         Question q = questions.get(currentIndex);
         Map<String, Object> payload = new HashMap<>();
         payload.put("question", q);
@@ -90,13 +100,14 @@ public class GameService {
           "/topic/" + roomCode + "/leaderboard",
           finalRoom != null ? finalRoom.getLeaderboard() : List.of()
         );
+        answeredPlayersPerQuestion.entrySet().removeIf(entry -> entry.getKey().startsWith(roomCode + ":"));
         // System.out.println(room.getLeaderboard());
         messagingTemplate.convertAndSend("/topic/" + roomCode + "/game", "Game Over");
         scheduler.shutdown();
       }
     };
-    // Send the first question immediately, then every 10 seconds.
-    scheduler.scheduleAtFixedRate(task, 0, 10, TimeUnit.SECONDS);
+    // Send the first question immediately, then based on the room's timer.
+    scheduler.scheduleAtFixedRate(task, 0, room.getTimer(), TimeUnit.SECONDS);
   }
 
   public void handleAnswer(Answer payload) {
@@ -120,8 +131,10 @@ public class GameService {
       );
     }
 
-    // if (room.hasPlayerAnswered(questionIndex, player)) return;
-    // room.markPlayerAnswered(questionIndex, player);
+    String questionKey = payload.getRoomCode() + ":" + questionIndex;
+    List<String> answeredPlayers = answeredPlayersPerQuestion.get(questionKey);
+    if (answeredPlayers == null || answeredPlayers.contains(player.getId())) return;
+    answeredPlayers.add(player.getId());
 
     Question question = room.getQuestions().get(questionIndex);
     int selectedOption = payload.getSelectedOption();
@@ -145,6 +158,38 @@ public class GameService {
 
     userResponseRepository.save(response);
     roomRepository.save(room); // Persist the changes to the room
+  }
+
+  private void handleUnanswered(String roomCode, int questionIndex) {
+    Room room = roomRepository.findById(roomCode).orElse(null);
+    if (room == null) {
+      return;
+    }
+
+    String questionKey = roomCode + ":" + questionIndex;
+    List<String> playersWhoAnswered = answeredPlayersPerQuestion.getOrDefault(questionKey, List.of());
+    Question question = room.getQuestions().get(questionIndex);
+
+    List<Player> allPlayers = room.getPlayers().values().stream().collect(Collectors.toList());
+
+    for (Player player : allPlayers) {
+      if (!playersWhoAnswered.contains(player.getId())) {
+        // This player did not answer
+        // UserResponse unansweredResponse = new UserResponse(player.getId(), roomCode, questionIndex, -1, false);
+        UserResponse response = new UserResponse();
+        response.setRoomCode(roomCode);
+        response.setPlayerId(player.getId());
+        response.setQuestionIndex(questionIndex);
+        response.setQuestionText(question.getQuestionText());
+        response.setOptions(question.getOptions());
+        response.setCorrectAnswerIndex(question.getCorrectAnswer());
+        response.setSelectedOption(5);
+        response.setCorrect(false);
+
+        response.setQuestionText(question.getQuestionText());
+        userResponseRepository.save(response);
+      }
+    }
   }
 
   public void notifyPlayerJoin(String roomCode, String playerName,List<String> players,String topic) {

@@ -29,54 +29,58 @@ public class QuestionService {
 
   public List<Question> generateQuestions(String topic, int numberOfQuestions,String difficulty) {
     try {
-      String response = geminiService.generateQuestions(topic, numberOfQuestions,difficulty).block();
+      // String response = geminiService.generateQuestions(topic, numberOfQuestions,difficulty).block();
 
-//       String response = """
-// {
-//   "candidates": [
-//     {
-//       "content": {
-//         "parts": [
-//           {
-//             "text": "```json\\n[\\n  {\\n    \\"questionText\\": \\"Which planet is known as the 'Red Planet'?\\",\\n    \\"options\\": [\\"Venus\\", \\"Mars\\", \\"Jupiter\\", \\"Saturn\\"],\\n    \\"correctAnswer\\": 1\\n  },\\n  {\\n    \\"questionText\\": \\"What is the capital city of Australia?\\",\\n    \\"options\\": [\\"Sydney\\", \\"Melbourne\\", \\"Canberra\\", \\"Brisbane\\"],\\n    \\"correctAnswer\\": 2\\n  },\\n  {\\n    \\"questionText\\": \\"Who painted the Mona Lisa?\\",\\n    \\"options\\": [\\"Vincent van Gogh\\", \\"Leonardo da Vinci\\", \\"Michelangelo\\", \\"Raphael\\"],\\n    \\"correctAnswer\\": 1\\n  },\\n  {\\n    \\"questionText\\": \\"What is the chemical symbol for water?\\",\\n    \\"options\\": [\\"CO2\\", \\"O2\\", \\"H2O\\", \\"NaCl\\"],\\n    \\"correctAnswer\\": 2\\n  },\\n  {\\n    \\"questionText\\": \\"In what year did World War II end?\\",\\n    \\"options\\": [\\"1943\\", \\"1945\\", \\"1947\\", \\"1949\\"],\\n    \\"correctAnswer\\": 1\\n  }\\n]\\n```"
-//           }
-//         ],
-//         "role": "model"
-//       },
-//       "finishReason": "STOP",
-//       "citationMetadata": {
-//         "citationSources": [
-//           {
-//             "startIndex": 19,
-//             "endIndex": 192,
-//             "uri": "https://github.com/LovingBrother/quizApp"
-//           }
-//         ]
-//       },
-//       "avgLogprobs": -0.038273578381720387
-//     }
-//   ],
-//   "usageMetadata": {
-//     "promptTokenCount": 92,
-//     "candidatesTokenCount": 262,
-//     "totalTokenCount": 354,
-//     "promptTokensDetails": [
-//       {
-//         "modality": "TEXT",
-//         "tokenCount": 92
-//       }
-//     ],
-//     "candidatesTokensDetails": [
-//       {
-//         "modality": "TEXT",
-//         "tokenCount": 262
-//       }
-//     ]
-//   },
-//   "modelVersion": "gemini-2.0-flash-lite"
-// }
-// """;
-      return parseQuestionsFromGemini(response);
+      String response = """
+{
+  "candidates": [
+    {
+      "content": {
+        "parts": [
+          {
+            "text": "```json\\n[\\n  {\\n    \\"questionText\\": \\"Which planet is known as the 'Red Planet'?\\",\\n    \\"options\\": [\\"Venus\\", \\"Mars\\", \\"Jupiter\\", \\"Saturn\\"],\\n    \\"correctAnswer\\": 1\\n  },\\n  {\\n    \\"questionText\\": \\"What is the capital city of Australia?\\",\\n    \\"options\\": [\\"Sydney\\", \\"Melbourne\\", \\"Canberra\\", \\"Brisbane\\"],\\n    \\"correctAnswer\\": 2\\n  },\\n  {\\n    \\"questionText\\": \\"Who painted the Mona Lisa?\\",\\n    \\"options\\": [\\"Vincent van Gogh\\", \\"Leonardo da Vinci\\", \\"Michelangelo\\", \\"Raphael\\"],\\n    \\"correctAnswer\\": 1\\n  },\\n  {\\n    \\"questionText\\": \\"What is the chemical symbol for water?\\",\\n    \\"options\\": [\\"CO2\\", \\"O2\\", \\"H2O\\", \\"NaCl\\"],\\n    \\"correctAnswer\\": 2\\n  },\\n  {\\n    \\"questionText\\": \\"In what year did World War II end?\\",\\n    \\"options\\": [\\"1943\\", \\"1945\\", \\"1947\\", \\"1949\\"],\\n    \\"correctAnswer\\": 1\\n  }\\n]\\n```"
+          }
+        ],
+        "role": "model"
+      },
+      "finishReason": "STOP",
+      "citationMetadata": {
+        "citationSources": [
+          {
+            "startIndex": 19,
+            "endIndex": 192,
+            "uri": "https://github.com/LovingBrother/quizApp"
+          }
+        ]
+      },
+      "avgLogprobs": -0.038273578381720387
+    }
+  ],
+  "usageMetadata": {
+    "promptTokenCount": 92,
+    "candidatesTokenCount": 262,
+    "totalTokenCount": 354,
+    "promptTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 92
+      }
+    ],
+    "candidatesTokensDetails": [
+      {
+        "modality": "TEXT",
+        "tokenCount": 262
+      }
+    ]
+  },
+  "modelVersion": "gemini-2.0-flash-lite"
+}
+""";
+      List<Question> temp1 = parseQuestionsFromGemini(response);
+      List<Question> temp2 = parseQuestionsFromGemini(response);
+      temp2.addAll(temp1);
+    
+      return temp2;
     } catch (QuestionParseException e) {
       throw new QuestionGenerationException(
         "Failed to generate questions for topic: " + topic,

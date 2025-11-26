@@ -18,7 +18,7 @@ public class RoomController {
 
     @PostMapping("/create")    
     public Room createRoom(@RequestParam String roomCode,@RequestBody RoomSettingsDTO settings) {
-        // System.out.println(settings.getNumQuestions()+settings.getTopic()+settings.getTimePerQuestion());
+        System.out.println(settings.getNumQuestions()+settings.getTopic()+settings.getTimePerQuestion());
         return roomService.createRoom(roomCode,settings);
     }
 
