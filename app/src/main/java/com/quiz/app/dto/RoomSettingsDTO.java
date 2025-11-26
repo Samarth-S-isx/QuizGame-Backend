@@ -4,14 +4,15 @@ public class RoomSettingsDTO {
     private String topic;
     private int numQuestions;
     private int timePerQuestion;
-
+    private String difficulty;
     // Constructors
     public RoomSettingsDTO() {}
 
-    public RoomSettingsDTO(String topic, int numQuestions, int timePerQuestion) {
+    public RoomSettingsDTO(String topic, int numQuestions, int timePerQuestion,String difficulty) {
         this.topic = topic;
         this.numQuestions = numQuestions;
         this.timePerQuestion = timePerQuestion;
+        this.difficulty = difficulty;
     }
 
     // Getters and Setters
@@ -37,5 +38,12 @@ public class RoomSettingsDTO {
 
     public void setTimePerQuestion(int timePerQuestion) {
         this.timePerQuestion = timePerQuestion;
+    }
+    public String getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(String difficulty) {
+        this.difficulty = difficulty;
     }
 }

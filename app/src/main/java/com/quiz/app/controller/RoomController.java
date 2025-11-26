@@ -16,15 +16,12 @@ public class RoomController {
     @Autowired
     private RoomService roomService;
 
-    // Endpoint to create a new room.
     @PostMapping("/create")    
     public Room createRoom(@RequestParam String roomCode,@RequestBody RoomSettingsDTO settings) {
         // System.out.println(settings.getNumQuestions()+settings.getTopic()+settings.getTimePerQuestion());
         return roomService.createRoom(roomCode,settings);
     }
 
-    // Endpoint to join an existing room.
-    // Example: POST /rooms/join?roomCode=123456&playerName=Sam
     @PostMapping("/join")
     public PlayerJoinResponse joinRoom(@RequestParam String roomCode,
                                      @RequestParam(required = false) String playerName,
@@ -34,7 +31,6 @@ public class RoomController {
     }
 
     // Endpoint to start the game.
-    // When invoked by the room creator, questions are broadcast every 10 seconds.
     @PostMapping("/start")
     public String startGame(@RequestParam String roomCode) {
         try {

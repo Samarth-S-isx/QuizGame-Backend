@@ -18,7 +18,16 @@ public class Room {
     private Integer timer;
     private Integer numberOfQuestions;
     private List<Question> questions;
+    private String difficulty;
     private Map<String, LeaderBoardEntry> leaderboard;
+
+    public String getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(String difficulty) {
+        this.difficulty = difficulty;
+    }
 
     public String getTopic() {
         return topic;

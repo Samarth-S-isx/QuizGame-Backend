@@ -27,8 +27,10 @@ public class QuestionService {
     this.openAIService = openAIService;
   }
 
-  public List<Question> generateQuestions(String topic, int numberOfQuestions) {
+  public List<Question> generateQuestions(String topic, int numberOfQuestions,String difficulty) {
     try {
+      // String response = geminiService.generateQuestions(topic, numberOfQuestions,difficulty).block();
+
       String response = """
 {
   "candidates": [

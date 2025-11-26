@@ -147,12 +147,17 @@ public class GameService {
     roomRepository.save(room); // Persist the changes to the room
   }
 
-  public void notifyPlayerJoin(String roomCode, String playerName) {
-    String notification = playerName + " has joined the room!";
-    // System.out.println(notification);
+  public void notifyPlayerJoin(String roomCode, String playerName,List<String> players,String topic) {
+    Map<String, Object> response = Map.of(
+        "type", "PLAYER_JOINED",  // Helpful for frontend to switch logic
+        "message", playerName + " has joined the room!",
+        "players", players,
+        "topic",topic
+    );
+
     messagingTemplate.convertAndSend(
-      "/topic/room/" + roomCode + "/notifications",
-      notification
+        "/topic/room/" + roomCode + "/notifications",
+        response
     );
   }
 }

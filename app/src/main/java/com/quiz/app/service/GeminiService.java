@@ -25,14 +25,17 @@ public class GeminiService {
                 .build();
     }
 
-    public Mono<String> generateQuestions(String topic, int count) {
-        String prompt = "Generate " + count + " multiple-choice questions on " + topic + ". Return the response as a properly formatted JSON array with the following structure for each question:\n" +
-                    "{\n" +
-                    "\"questionText\": \"string\",\n" +
-                    "\"options\": [\"string1\", \"string2\", \"string3\", \"string4\"],\n" +
-                    "\"correctAnswer\": integer index of the correct option (0-based)\n" +
-                    "}\n" +
-                    "Ensure that the JSON is properly formatted, with no extra text or formatting.";
+    public Mono<String> generateQuestions(String topic, int count,String difficulty) {
+        String prompt = "Generate " + count + " multiple-choice questions on the topic '" + topic + 
+                "' with difficulty level '" + difficulty + "'. " +
+                "Return the response as a properly formatted JSON array with the following structure for each question:\n" +
+                "{\n" +
+                "  \"questionText\": \"string\",\n" +
+                "  \"options\": [\"string1\", \"string2\", \"string3\", \"string4\"],\n" +
+                "  \"correctAnswer\": integer (0-based index of the correct option),\n" +
+                "  \"difficulty\": \"" + difficulty + "\"\n" +
+                "}\n" +
+                "Ensure that the output is ONLY the JSON array, with no extra text, comments, or formatting.";
 
         // Adjusted request body structure to match the expected input for Gemini
         Map<String, Object> body = Map.of(
