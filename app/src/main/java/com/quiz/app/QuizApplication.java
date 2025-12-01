@@ -10,7 +10,7 @@ import com.quiz.app.config.OpenAIConfig;
 // @EnableConfigurationProperties(OpenAIConfig.class)
 public class QuizApplication {
 
-	public static void main(String[] args) {
+	public static void main(String[]  args) {
 		SpringApplication.run(QuizApplication.class, args);
 	}
 
